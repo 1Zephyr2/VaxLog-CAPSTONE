@@ -1,98 +1,426 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, ScrollView, View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const { width } = Dimensions.get('window');
 
-export default function HomeScreen() {
+// Mock data for family members
+const familyMembers = [
+  {
+    id: 1,
+    name: 'Julian Doe',
+    birthdate: '12/06/2001',
+    fullyVaccinated: 'Completed',
+    nextDose: 'None',
+  },
+  {
+    id: 2,
+    name: 'Ryan Doe',
+    birthdate: '12/08/2010',
+    fullyVaccinated: 'Completed',
+    nextDose: 'None',
+  },
+  {
+    id: 3,
+    name: 'Alex Graham',
+    birthdate: '08/02/2010',
+    fullyVaccinated: 'Not Completed',
+    nextDose: '10/10/2025',
+  },
+  {
+    id: 4,
+    name: 'May Magde',
+    birthdate: '07/08/2005',
+    fullyVaccinated: 'Completed',
+    nextDose: 'None',
+  },
+  {
+    id: 5,
+    name: 'Brock Turner',
+    birthdate: '01/06/2003',
+    fullyVaccinated: 'Not Completed',
+    nextDose: '12/08/2025',
+  },
+  {
+    id: 6,
+    name: 'Macy Turner',
+    birthdate: '07/07/2003',
+    fullyVaccinated: 'Not Completed',
+    nextDose: '12/08/2025',
+  },
+  {
+    id: 7,
+    name: 'Lucy Ambar',
+    birthdate: '08/03/2003',
+    fullyVaccinated: 'Completed',
+    nextDose: 'None',
+  },
+  {
+    id: 8,
+    name: 'Jane Ambar',
+    birthdate: '18/07/2008',
+    fullyVaccinated: 'Completed',
+    nextDose: 'None',
+  },
+];
+
+export default function DashboardScreen() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('Dashboard');
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#E8F5E9', dark: '#1B4E20' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <View style={styles.logoContainer}>
+            <Ionicons name="shield-checkmark" size={28} color="#FFFFFF" />
+          </View>
+        </View>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.profileButton}>
+            <Ionicons name="person-circle-outline" size={36} color="#1B4E20" />
+          </TouchableOpacity>
+        </View>
+      </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      {/* Title */}
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Family Vaccination Tracker</Text>
+      </View>
+
+      {/* Navigation Tabs */}
+      <View style={styles.tabsContainer}>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'Dashboard' && styles.tabActive]}
+          onPress={() => setActiveTab('Dashboard')}>
+          <Text style={[styles.tabText, activeTab === 'Dashboard' && styles.tabTextActive]}>
+            Dashboard
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'Family Members' && styles.tabInactive]}
+          onPress={() => setActiveTab('Family Members')}>
+          <Text style={styles.tabText}>Family Members</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'Vaccinations' && styles.tabInactive]}
+          onPress={() => setActiveTab('Vaccinations')}>
+          <Text style={styles.tabText}>Vaccinations</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Dashboard Title */}
+        <Text style={styles.dashboardTitle}>Dashboard</Text>
+
+        {/* Info Cards Container */}
+        <View style={styles.cardsContainer}>
+          {/* Welcome Card */}
+          <View style={styles.welcomeCard}>
+            <Text style={styles.welcomeTitle}>Welcome, Marcus Turner</Text>
+            <Text style={styles.welcomeSubtitle}>
+              Track your family's vaccination records and upcoming doses
+            </Text>
+          </View>
+
+          {/* Next Dose Card */}
+          <View style={styles.nextDoseCard}>
+            <Text style={styles.nextDoseTitle}>Next Dose</Text>
+            <View style={styles.doseBadge}>
+              <Text style={styles.doseBadgeText}>DTP</Text>
+            </View>
+            <Text style={styles.doseDate}>22/10/2025</Text>
+          </View>
+        </View>
+
+        {/* Family Vaccination Overview */}
+        <View style={styles.overviewContainer}>
+          <View style={styles.overviewHeader}>
+            <Text style={styles.overviewTitle}>Family Vaccination Overview</Text>
+            <View style={styles.progressIndicator}>
+              <View style={styles.progressBar} />
+            </View>
+          </View>
+
+          {/* Table Header */}
+          <View style={styles.tableHeader}>
+            <Text style={[styles.tableHeaderText, { flex: 1.5 }]}>Name</Text>
+            <Text style={[styles.tableHeaderText, { flex: 1.2 }]}>Birthdate</Text>
+            <Text style={[styles.tableHeaderText, { flex: 1.3 }]}>Fully Vaccinated</Text>
+            <Text style={[styles.tableHeaderText, { flex: 1 }]}>Next Dose</Text>
+          </View>
+
+          {/* Table Rows */}
+          {familyMembers.map((member, index) => (
+            <View
+              key={member.id}
+              style={[
+                styles.tableRow,
+                index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd,
+              ]}>
+              <Text style={[styles.tableCell, styles.nameCell, { flex: 1.5 }]}>
+                {member.name}
+              </Text>
+              <Text style={[styles.tableCell, { flex: 1.2 }]}>{member.birthdate}</Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: 1.3 },
+                  member.fullyVaccinated === 'Completed'
+                    ? styles.completedText
+                    : styles.notCompletedText,
+                ]}>
+                {member.fullyVaccinated}
+              </Text>
+              <Text style={[styles.tableCell, { flex: 1 }]}>{member.nextDose}</Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navButton}>
+          <Ionicons name="calendar" size={24} color="#1B4E20" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton}>
+          <Ionicons name="information-circle" size={24} color="#1B4E20" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton}>
+          <Ionicons name="settings" size={24} color="#1B4E20" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton}>
+          <Ionicons name="notifications" size={24} color="#1B4E20" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton}>
+          <Ionicons name="home" size={24} color="#1B4E20" />
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: '#2D7A3F',
+  },
+  headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
+  logoContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  profileButton: {
+    padding: 4,
+  },
+  titleContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#FFFFFF',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1B4E20',
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
     gap: 8,
+    marginBottom: 16,
+  },
+  tab: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#E8F5E9',
+  },
+  tabActive: {
+    backgroundColor: '#10B981',
+  },
+  tabInactive: {
+    backgroundColor: '#D1F4E0',
+  },
+  tabText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#1B4E20',
+  },
+  tabTextActive: {
+    color: '#FFFFFF',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  dashboardTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1B4E20',
+    marginBottom: 16,
+  },
+  cardsContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  welcomeCard: {
+    flex: 1,
+    backgroundColor: '#E8F5E9',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#C8E6C9',
+  },
+  welcomeTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1B4E20',
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  welcomeSubtitle: {
+    fontSize: 12,
+    color: '#2D5F3C',
+    lineHeight: 18,
+  },
+  nextDoseCard: {
+    backgroundColor: '#D1F4E0',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#A5D6A7',
+    minWidth: 120,
+    alignItems: 'center',
+  },
+  nextDoseTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1B4E20',
+    marginBottom: 8,
+  },
+  doseBadge: {
+    backgroundColor: '#10B981',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  doseBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  doseDate: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#1B4E20',
+  },
+  overviewContainer: {
+    backgroundColor: '#E8F5E9',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 80,
+    borderWidth: 1,
+    borderColor: '#C8E6C9',
+  },
+  overviewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  overviewTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1B4E20',
+  },
+  progressIndicator: {
+    width: 60,
+    height: 20,
+    backgroundColor: '#10B981',
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#10B981',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: '#A5D6A7',
+    marginBottom: 4,
+  },
+  tableHeaderText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#1B4E20',
+    textAlign: 'left',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    marginBottom: 2,
+  },
+  tableRowEven: {
+    backgroundColor: '#F1F8F4',
+  },
+  tableRowOdd: {
+    backgroundColor: '#FFFFFF',
+  },
+  tableCell: {
+    fontSize: 10,
+    color: '#2D5F3C',
+    textAlign: 'left',
+  },
+  nameCell: {
+    fontWeight: '500',
+    color: '#1B4E20',
+  },
+  completedText: {
+    color: '#059669',
+    fontWeight: '500',
+  },
+  notCompletedText: {
+    color: '#DC2626',
+    fontWeight: '500',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 12,
+    backgroundColor: '#E8F5E9',
+    borderTopWidth: 1,
+    borderTopColor: '#C8E6C9',
+  },
+  navButton: {
+    padding: 8,
   },
 });
